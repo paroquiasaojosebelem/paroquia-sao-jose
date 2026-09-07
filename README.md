@@ -26,3 +26,8 @@ Nunca coloque `service_role`, secret key ou senha do banco no frontend.
 
 ## Próximos módulos
 Edição de horários, agenda, notícias, intenções, liturgia, festividade, galeria, Storage e transmissão YouTube.
+
+## Versão 3.1
+- Nova fotografia nítida da fachada na imagem principal.
+- Módulo administrativo de Horários com inclusão, edição, ativação/desativação e exclusão.
+- Alterações de horários são persistidas no Supabase e refletidas nas páginas públicas.
