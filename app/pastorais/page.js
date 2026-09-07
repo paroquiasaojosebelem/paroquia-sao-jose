@@ -1,0 +1,1 @@
+import Header from '../../components/Header';import Footer from '../../components/Footer';export default function Page(){return <><Header/><main className="wrap page"><h1>Pastorais</h1><div className="panel"><p>Módulo preparado para integração dinâmica com o Supabase na próxima atualização.</p></div></main><Footer/></>}

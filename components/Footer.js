@@ -1,0 +1,1 @@
+export default function Footer(){return <footer><div className="wrap footerGrid"><div><b>PARÓQUIA SÃO JOSÉ</b><br/>Umarizal – Belém/PA</div><div>Arquidiocese de Belém<br/>Pároco: Padre Vandilson | Vigário: Padre Cleber</div><div>WhatsApp: (91) 98284-3192</div></div></footer>}
