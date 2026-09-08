@@ -1,5 +1,5 @@
 import { createClient } from '../../../lib/supabase/server'
-
+import Link from 'next/link'
 const dias = [
   'Domingo',
   'Segunda-feira',
@@ -44,19 +44,20 @@ export default async function AdminHorarios() {
           </p>
         </div>
 
-        <button
-          style={{
-            background: '#89521f',
-            color: '#fff',
-            border: 0,
-            borderRadius: '8px',
-            padding: '12px 18px',
-            fontWeight: '600',
-            cursor: 'pointer'
-          }}
-        >
-          + Novo horário
-        </button>
+        <Link
+  href="/admin/horarios/novo"
+  style={{
+    background: '#89521f',
+    color: '#fff',
+    borderRadius: '8px',
+    padding: '12px 18px',
+    fontWeight: '600',
+    textDecoration: 'none',
+    display: 'inline-block'
+  }}
+>
+  + Novo horário
+</Link>
       </div>
 
       <div
