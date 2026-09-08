@@ -38,6 +38,26 @@ async function alternarStatus(formData) {
   revalidatePath('/')
 }
 
+async function excluirHorario(formData) {
+  'use server'
+
+  const supabase = await createClient()
+  const id = formData.get('id')
+
+  const { error } = await supabase
+    .from('mass_schedule')
+    .delete()
+    .eq('id', id)
+
+  if (error) {
+    throw new Error(`Erro ao excluir horário: ${error.message}`)
+  }
+
+  revalidatePath('/admin/horarios')
+  revalidatePath('/horarios')
+  revalidatePath('/')
+}
+
 export default async function AdminHorarios() {
   const supabase = await createClient()
 
@@ -166,7 +186,7 @@ export default async function AdminHorarios() {
   Editar
 </a>
 
-                  <form action={alternarStatus}>
+ <form action={alternarStatus}>
   <input type="hidden" name="id" value={item.id} />
   <input
     type="hidden"
@@ -189,18 +209,25 @@ export default async function AdminHorarios() {
   </button>
 </form>
 
-                    <button
-                      style={{
-                        border: '1px solid #a33',
-                        background: '#fff',
-                        color: '#a33',
-                        borderRadius: '6px',
-                        padding: '7px 10px',
-                        cursor: 'pointer'
-                      }}
-                    >
-                      Excluir
-                    </button>
+<form action={excluirHorario}>
+  <input type="hidden" name="id" value={item.id} />
+
+  <button
+    type="submit"
+    style={{
+      border: '1px solid #a33',
+      background: '#fff',
+      color: '#a33',
+      borderRadius: '6px',
+      padding: '7px 10px',
+      cursor: 'pointer'
+    }}
+  >
+    Excluir
+  </button>
+</form>
+ 
+
                   </div>
                 </td>
               </tr>
