@@ -127,18 +127,21 @@ export default async function AdminHorarios() {
                       flexWrap: 'wrap'
                     }}
                   >
-                    <button
-                      style={{
-                        border: '1px solid #0b4a6f',
-                        background: '#fff',
-                        color: '#0b4a6f',
-                        borderRadius: '6px',
-                        padding: '7px 10px',
-                        cursor: 'pointer'
-                      }}
-                    >
-                      Editar
-                    </button>
+                   <a
+  href={`/admin/horarios/editar/${item.id}`}
+  style={{
+    border: '1px solid #0b4a6f',
+    background: '#fff',
+    color: '#0b4a6f',
+    borderRadius: '6px',
+    padding: '7px 10px',
+    cursor: 'pointer',
+    textDecoration: 'none',
+    display: 'inline-block'
+  }}
+>
+  Editar
+</a>
 
                     <button
                       style={{
