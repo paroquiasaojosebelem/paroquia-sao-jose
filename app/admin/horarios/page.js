@@ -1,5 +1,6 @@
 import { createClient } from '../../../lib/supabase/server'
 import Link from 'next/link'
+import { revalidatePath } from 'next/cache'
 const dias = [
   'Domingo',
   'Segunda-feira',
@@ -13,6 +14,28 @@ const dias = [
 function formatarHora(hora) {
   if (!hora) return '-'
   return hora.slice(0, 5)
+}
+
+async function alternarStatus(formData) {
+  'use server'
+
+  const supabase = await createClient()
+
+  const id = formData.get('id')
+  const active = formData.get('active') === 'true'
+
+  const { error } = await supabase
+    .from('mass_schedule')
+    .update({ active: !active })
+    .eq('id', id)
+
+  if (error) {
+    throw new Error(`Erro ao alterar status: ${error.message}`)
+  }
+
+  revalidatePath('/admin/horarios')
+  revalidatePath('/horarios')
+  revalidatePath('/')
 }
 
 export default async function AdminHorarios() {
@@ -143,18 +166,28 @@ export default async function AdminHorarios() {
   Editar
 </a>
 
-                    <button
-                      style={{
-                        border: '1px solid #89521f',
-                        background: '#fff',
-                        color: '#89521f',
-                        borderRadius: '6px',
-                        padding: '7px 10px',
-                        cursor: 'pointer'
-                      }}
-                    >
-                      {item.active ? 'Desativar' : 'Ativar'}
-                    </button>
+                  <form action={alternarStatus}>
+  <input type="hidden" name="id" value={item.id} />
+  <input
+    type="hidden"
+    name="active"
+    value={String(item.active)}
+  />
+
+  <button
+    type="submit"
+    style={{
+      border: '1px solid #89521f',
+      background: '#fff',
+      color: '#89521f',
+      borderRadius: '6px',
+      padding: '7px 10px',
+      cursor: 'pointer'
+    }}
+  >
+    {item.active ? 'Desativar' : 'Ativar'}
+  </button>
+</form>
 
                     <button
                       style={{
