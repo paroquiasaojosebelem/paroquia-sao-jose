@@ -1,7 +1,8 @@
 'use client'
+
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 import { createClient } from '../../lib/supabase/client'
 
 export default function NovaSenha(){
@@ -11,7 +12,6 @@ export default function NovaSenha(){
   const [ready,setReady]=useState(false)
   const [invalid,setInvalid]=useState(false)
   const router=useRouter()
-  const searchParams=useSearchParams()
 
   useEffect(()=>{
     let mounted=true
@@ -19,14 +19,14 @@ export default function NovaSenha(){
 
     async function validateRecovery(){
       try{
-        const code=searchParams.get('code')
+        const params=new URLSearchParams(window.location.search)
+        const code=params.get('code')
 
-        // Fluxo PKCE atual do Supabase: o retorno vem com ?code=...
+        // Fluxo PKCE do Supabase: o retorno pode vir com ?code=...
         if(code){
           const {error}=await supabase.auth.exchangeCodeForSession(code)
           if(error) throw error
 
-          // Remove o código temporário da barra de endereço.
           window.history.replaceState({}, document.title, '/nova-senha')
           if(mounted){
             setReady(true)
@@ -36,8 +36,7 @@ export default function NovaSenha(){
           return
         }
 
-        // Se o Supabase já tiver criado a sessão de recuperação,
-        // basta confirmar que existe uma sessão válida.
+        // Em alguns fluxos, o Supabase já entrega a sessão de recuperação.
         const {data:{session},error}=await supabase.auth.getSession()
         if(error) throw error
 
@@ -79,10 +78,11 @@ export default function NovaSenha(){
       mounted=false
       subscription?.unsubscribe()
     }
-  },[searchParams])
+  },[])
 
   async function submit(e){
     e.preventDefault()
+
     if(!ready){
       setMsg('O link de recuperação ainda não foi validado.')
       return
@@ -122,8 +122,26 @@ export default function NovaSenha(){
     </> : <>
       {!ready && <div className="successBox">{msg}</div>}
       {ready && <form onSubmit={submit}>
-        <label>Nova senha<input type="password" value={password} onChange={e=>setPassword(e.target.value)} required minLength={8} autoComplete="new-password"/></label>
-        <label>Confirmar nova senha<input type="password" value={confirm} onChange={e=>setConfirm(e.target.value)} required minLength={8} autoComplete="new-password"/></label>
+        <label>Nova senha
+          <input
+            type="password"
+            value={password}
+            onChange={e=>setPassword(e.target.value)}
+            required
+            minLength={8}
+            autoComplete="new-password"
+          />
+        </label>
+        <label>Confirmar nova senha
+          <input
+            type="password"
+            value={confirm}
+            onChange={e=>setConfirm(e.target.value)}
+            required
+            minLength={8}
+            autoComplete="new-password"
+          />
+        </label>
         <button>Salvar nova senha</button>
         <small>{msg}</small>
       </form>}
