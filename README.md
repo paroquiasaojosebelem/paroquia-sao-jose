@@ -43,3 +43,10 @@ Nunca coloque `service_role`, senha do banco ou chaves secretas no frontend.
 3. Faça commit na branch `main`.
 4. A Vercel fará o deploy automaticamente.
 5. Teste `/login`, `/admin`, `/liturgia`, `/terco-virtual`, `/transmissao`, `/dizimo`, `/intencoes` e `/pastorais`.
+
+## Atualização v5 — autenticação e intenções
+- Recuperação de senha pelo próprio site: `/recuperar-senha` → `/auth/callback` → `/nova-senha`.
+- Intenções com escolha de PIX, cartão de crédito ou débito.
+- Valor, chave PIX/QR e link seguro de cartão configuráveis em `/admin/configuracoes`.
+- Controle administrativo de pagamento: pendente, pago, isento ou cancelado.
+- Execute `supabase/migrations/20260912_site_v5_auth_pagamentos.sql` antes de testar os pagamentos.
