@@ -1,0 +1,3 @@
+'use client'
+import { useState } from 'react'
+export default function LiturgyAudio({text,label='Ouvir'}){const [speaking,setSpeaking]=useState(false);function play(){if(typeof window==='undefined'||!('speechSynthesis'in window))return;window.speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(text);u.lang='pt-BR';u.rate=.92;u.onend=()=>setSpeaking(false);setSpeaking(true);window.speechSynthesis.speak(u)}function stop(){window.speechSynthesis.cancel();setSpeaking(false)}return <button type="button" className="audioBtn" onClick={speaking?stop:play}>{speaking?'■ Parar':'🔊 '+label}</button>}

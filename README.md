@@ -1,33 +1,45 @@
 # Paróquia São José — Next.js + Supabase + Vercel
 
-Versão 3: base de produção iniciada a partir do layout aprovado.
+Versão oficial evoluída a partir do projeto que já estava em produção na Vercel.
 
-## Já conectado
-- Next.js App Router
+## Arquitetura preservada
+- Next.js 15 / React 19
 - Supabase SSR
-- Login real em `/login`
-- Proteção do `/admin` por sessão + perfil `admin/editor`
-- Home lendo `mass_schedule` do Supabase
-- Página `/horarios` lendo horários reais
-- WhatsApp da Secretaria
-- Espaço de transmissão ao vivo pelo YouTube preparado no layout
+- Supabase Auth com `/login`
+- Perfis `admin` e `editor` na tabela `profiles`
+- RLS no banco
+- GitHub `main` → deploy automático na Vercel
 
-## Configuração local
-1. Copie `.env.example` para `.env.local`.
-2. Preencha `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` com a Publishable Key do projeto.
-3. Execute `npm install` e `npm run dev`.
+## Funcionalidades desta atualização
+- Novo layout institucional aprovado, com a nova foto real da igreja.
+- Pastorais dinâmicas: Liturgia, Guarda, Batismo, Idoso, Música, Dízimo, Saúde, Família, Pascom, Catequese e Mães que Oram pelos Filhos.
+- Horários de missas atualizados e administráveis.
+- Liturgia Diária automática por data via `liturgia.up.railway.app/v2`, com navegação entre dias e leitura em voz alta pelo navegador.
+- Reflexão do Evangelho própria da Paróquia, administrável no Supabase.
+- Dízimo com PIX e redirecionamento seguro para provedor externo de cartão; o site não armazena dados de cartão.
+- Intenções de missa enviadas ao Supabase e acompanhadas no painel.
+- Notícias dinâmicas e administráveis.
+- Terço Virtual interativo com quatro mistérios, roteiro completo e leitura em voz alta.
+- Transmissão ao Vivo via YouTube, com programação, status ao vivo e histórico.
+- Área administrativa protegida para Horários, Pastorais, Notícias, Intenções, Liturgia, Transmissões e Configurações.
 
-## Vercel
-Ao importar o projeto na Vercel, cadastre em Settings > Environment Variables:
+## IMPORTANTE — migração do Supabase antes do deploy
+Execute no SQL Editor do projeto `paroquia-sao-jose` o arquivo:
+
+`supabase/migrations/20260912_site_v4.sql`
+
+A migração é incremental: não apaga as tabelas existentes. Ela acrescenta as colunas necessárias, cria `live_streams` e `donation_settings`, acrescenta políticas RLS e cadastra as pastorais e horários solicitados quando ainda não existirem.
+
+## Variáveis na Vercel
+Mantenha as variáveis já existentes:
 - `NEXT_PUBLIC_SUPABASE_URL`
 - `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`
 
-Nunca coloque `service_role`, secret key ou senha do banco no frontend.
+Nunca coloque `service_role`, senha do banco ou chaves secretas no frontend.
 
-## Próximos módulos
-Edição de horários, agenda, notícias, intenções, liturgia, festividade, galeria, Storage e transmissão YouTube.
-
-## Versão 3.1
-- Nova fotografia nítida da fachada na imagem principal.
-- Módulo administrativo de Horários com inclusão, edição, ativação/desativação e exclusão.
-- Alterações de horários são persistidas no Supabase e refletidas nas páginas públicas.
+## Publicação
+1. Execute a migração SQL no Supabase.
+2. Substitua/atualize os arquivos do repositório GitHub com esta versão.
+3. Faça commit na branch `main`.
+4. A Vercel fará o deploy automaticamente.
+5. Teste `/login`, `/admin`, `/liturgia`, `/terco-virtual`, `/transmissao`, `/dizimo`, `/intencoes` e `/pastorais`.
