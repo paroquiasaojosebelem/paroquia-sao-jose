@@ -1,0 +1,4 @@
+import { createClient } from '../../../lib/supabase/server'
+import AvailabilityForm from './AvailabilityForm'
+
+export default async function Page({params}){const {token}=await params;const s=await createClient();const {data}=await s.rpc('get_liturgy_availability',{p_token:token});if(!data)return <main className="login"><section className="panel"><h1>Link indisponível</h1><p>Este link de disponibilidade é inválido ou não está mais ativo.</p></section></main>;return <main className="availabilityPage"><section className="availabilityCard"><span className="eyebrow dark">PASTORAL DA LITURGIA</span><h1>Disponibilidade para a escala</h1><p>Olá, <b>{data.member_name}</b>. Marque as Santas Missas em que você pode servir no mês indicado.</p><AvailabilityForm token={token} data={data}/></section></main>}
