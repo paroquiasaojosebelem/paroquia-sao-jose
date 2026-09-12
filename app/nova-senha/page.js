@@ -1,33 +1,132 @@
 'use client'
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
+import Link from 'next/link'
+import { useEffect, useState } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { createClient } from '../../lib/supabase/client'
 
 export default function NovaSenha(){
   const [password,setPassword]=useState('')
   const [confirm,setConfirm]=useState('')
-  const [msg,setMsg]=useState('')
+  const [msg,setMsg]=useState('Validando link de recuperação...')
+  const [ready,setReady]=useState(false)
+  const [invalid,setInvalid]=useState(false)
   const router=useRouter()
+  const searchParams=useSearchParams()
+
+  useEffect(()=>{
+    let mounted=true
+    const supabase=createClient()
+
+    async function validateRecovery(){
+      try{
+        const code=searchParams.get('code')
+
+        // Fluxo PKCE atual do Supabase: o retorno vem com ?code=...
+        if(code){
+          const {error}=await supabase.auth.exchangeCodeForSession(code)
+          if(error) throw error
+
+          // Remove o código temporário da barra de endereço.
+          window.history.replaceState({}, document.title, '/nova-senha')
+          if(mounted){
+            setReady(true)
+            setInvalid(false)
+            setMsg('')
+          }
+          return
+        }
+
+        // Se o Supabase já tiver criado a sessão de recuperação,
+        // basta confirmar que existe uma sessão válida.
+        const {data:{session},error}=await supabase.auth.getSession()
+        if(error) throw error
+
+        if(session){
+          if(mounted){
+            setReady(true)
+            setInvalid(false)
+            setMsg('')
+          }
+          return
+        }
+
+        if(mounted){
+          setInvalid(true)
+          setReady(false)
+          setMsg('O link de recuperação é inválido ou expirou. Solicite um novo link.')
+        }
+      }catch(error){
+        console.error('Erro ao validar recuperação:', error)
+        if(mounted){
+          setInvalid(true)
+          setReady(false)
+          setMsg('Não foi possível validar o link de recuperação. Solicite um novo link.')
+        }
+      }
+    }
+
+    validateRecovery()
+
+    const {data:{subscription}}=supabase.auth.onAuthStateChange((event,session)=>{
+      if((event==='PASSWORD_RECOVERY' || event==='SIGNED_IN') && session && mounted){
+        setReady(true)
+        setInvalid(false)
+        setMsg('')
+      }
+    })
+
+    return ()=>{
+      mounted=false
+      subscription?.unsubscribe()
+    }
+  },[searchParams])
 
   async function submit(e){
     e.preventDefault()
-    if(password.length<8){setMsg('Use uma senha com pelo menos 8 caracteres.');return}
-    if(password!==confirm){setMsg('As senhas não coincidem.');return}
+    if(!ready){
+      setMsg('O link de recuperação ainda não foi validado.')
+      return
+    }
+    if(password.length<8){
+      setMsg('Use uma senha com pelo menos 8 caracteres.')
+      return
+    }
+    if(password!==confirm){
+      setMsg('As senhas não coincidem.')
+      return
+    }
+
     setMsg('Salvando nova senha...')
     const supabase=createClient()
     const {error}=await supabase.auth.updateUser({password})
-    if(error){setMsg('O link pode ter expirado. Solicite um novo e-mail de recuperação.');return}
+
+    if(error){
+      console.error('Erro ao alterar senha:', error)
+      setMsg('Não foi possível alterar a senha. Solicite um novo link de recuperação.')
+      return
+    }
+
     await supabase.auth.signOut()
     router.replace('/login?senha=alterada')
     router.refresh()
   }
 
-  return <main className="login"><form onSubmit={submit} className="panel loginPanel">
+  return <main className="login"><section className="panel loginPanel">
     <h1>Criar nova senha</h1>
     <p>Defina uma nova senha para o painel administrativo da Paróquia.</p>
-    <label>Nova senha<input type="password" value={password} onChange={e=>setPassword(e.target.value)} required minLength={8} autoComplete="new-password"/></label>
-    <label>Confirmar nova senha<input type="password" value={confirm} onChange={e=>setConfirm(e.target.value)} required minLength={8} autoComplete="new-password"/></label>
-    <button>Salvar nova senha</button>
-    <small>{msg}</small>
-  </form></main>
+
+    {invalid ? <>
+      <div className="errorBox">{msg}</div>
+      <Link className="goldBtn" href="/recuperar-senha">Solicitar novo link</Link>
+      <Link className="forgotLink" href="/login">← Voltar ao login</Link>
+    </> : <>
+      {!ready && <div className="successBox">{msg}</div>}
+      {ready && <form onSubmit={submit}>
+        <label>Nova senha<input type="password" value={password} onChange={e=>setPassword(e.target.value)} required minLength={8} autoComplete="new-password"/></label>
+        <label>Confirmar nova senha<input type="password" value={confirm} onChange={e=>setConfirm(e.target.value)} required minLength={8} autoComplete="new-password"/></label>
+        <button>Salvar nova senha</button>
+        <small>{msg}</small>
+      </form>}
+    </>}
+  </section></main>
 }

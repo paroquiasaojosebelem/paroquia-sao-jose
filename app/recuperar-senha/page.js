@@ -12,9 +12,21 @@ export default function RecuperarSenha(){
     e.preventDefault()
     setMsg('Enviando...')
     const supabase=createClient()
-    const redirectTo=`${window.location.origin}/auth/callback?next=/nova-senha`
+
+    // O Supabase fará a verificação do link e retornará diretamente
+    // para a página que conclui a troca de senha.
+    const redirectTo=`${window.location.origin}/nova-senha`
     const {error}=await supabase.auth.resetPasswordForEmail(email,{redirectTo})
-    if(error){setMsg('Não foi possível enviar o e-mail de recuperação. Tente novamente.');return}
+
+    if(error){
+      console.error('Erro ao enviar recuperação:', error)
+      if(error?.message?.toLowerCase().includes('rate limit')){
+        setMsg('O limite temporário de envio de e-mails foi atingido. Aguarde alguns minutos e tente novamente.')
+      }else{
+        setMsg('Não foi possível enviar o e-mail de recuperação. Tente novamente.')
+      }
+      return
+    }
     setSent(true)
     setMsg('')
   }
@@ -23,7 +35,7 @@ export default function RecuperarSenha(){
     <h1>Recuperar senha</h1>
     <p>Informe o e-mail do usuário administrativo. Você receberá um link seguro para criar uma nova senha.</p>
     {sent?<>
-      <div className="successBox">E-mail de recuperação enviado. Verifique também a caixa de spam. O link é temporário.</div>
+      <div className="successBox">E-mail de recuperação enviado. Verifique também a caixa de spam. Use somente o link mais recente.</div>
       <Link className="goldBtn" href="/login">Voltar ao login</Link>
     </>:<form onSubmit={submit}>
       <label>E-mail<input type="email" value={email} onChange={e=>setEmail(e.target.value)} required autoComplete="email"/></label>
