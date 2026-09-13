@@ -1,0 +1,47 @@
+*{box-sizing:border-box}
+body{margin:0;background:#f3efe7;color:#1f1a16;font-family:Arial,Helvetica,sans-serif}
+.printPage{max-width:1400px;margin:24px auto;background:#fff;padding:28px 32px;box-shadow:0 8px 30px rgba(0,0,0,.08)}
+.screenActions{display:flex;justify-content:space-between;align-items:center;margin-bottom:22px}
+.screenActions a{color:#083b5c;text-decoration:none;font-weight:700}
+.printButton{border:0;border-radius:8px;padding:11px 18px;background:#b57825;color:#fff;font-weight:700;cursor:pointer}
+.printHeader{display:grid;grid-template-columns:80px 1fr 80px;align-items:center;text-align:center;border-bottom:2px solid #6d3a16;padding-bottom:14px}
+.cross{font-size:38px;color:#8a541d}
+.archdiocese{font-size:12px;letter-spacing:2px;font-weight:700}
+.printHeader h1{font-family:Georgia,'Times New Roman',serif;color:#5c2c0e;font-size:24px;margin:5px 0}
+.printHeader p{margin:0;font-weight:700}
+.titleBox{text-align:center;padding:15px 0}
+.titleBox h2{font-family:Georgia,'Times New Roman',serif;font-size:21px;margin:0 0 4px;color:#5c2c0e}
+.titleBox strong{font-size:16px}
+.schedulePrintTable{width:100%;border-collapse:collapse;table-layout:fixed;font-size:11px}
+.schedulePrintTable th,.schedulePrintTable td{border:1px solid #8c806f;padding:7px 6px;text-align:center;vertical-align:middle}
+.schedulePrintTable th{background:#e7b94f;color:#24180d;font-size:10px;letter-spacing:.4px}
+.schedulePrintTable th:nth-child(1){width:9%}
+.schedulePrintTable th:nth-child(2){width:10%}
+.schedulePrintTable th:nth-child(3){width:9%}
+.schedulePrintTable th:nth-child(n+4){width:18%}
+.schedulePrintTable tr.weekday td{background:#fbf2e5}
+.schedulePrintTable tr.weekend td{background:#e9f2f7}
+.schedulePrintTable small{display:block;font-size:8px;margin-top:2px}
+.empty{text-align:center;padding:40px}
+footer{text-align:center;font-size:9px;margin-top:12px;color:#665d54}
+footer p{margin:2px}
+@page{size:A4 landscape;margin:8mm}
+@media print{
+  body{background:#fff}
+  .printPage{max-width:none;margin:0;padding:0;box-shadow:none}
+  .screenActions{display:none!important}
+  .printHeader{grid-template-columns:55px 1fr 55px;padding-bottom:7px}
+  .cross{font-size:25px}
+  .printHeader h1{font-size:17px;margin:2px 0}
+  .archdiocese{font-size:8px}
+  .printHeader p{font-size:9px}
+  .titleBox{padding:6px 0}
+  .titleBox h2{font-size:14px;margin-bottom:2px}
+  .titleBox strong{font-size:10px}
+  .schedulePrintTable{font-size:7.6px}
+  .schedulePrintTable th,.schedulePrintTable td{padding:2.6px 2px;line-height:1.08}
+  .schedulePrintTable th{font-size:7px}
+  .schedulePrintTable small{font-size:6px}
+  footer{font-size:6.5px;margin-top:4px}
+  tr{break-inside:avoid}
+}

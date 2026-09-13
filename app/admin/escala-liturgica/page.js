@@ -494,7 +494,10 @@ export default async function Page({searchParams}){
             <h3>Escala sugerida</h3>
             <p className="adminHint">A geração considera apenas quem informou disponibilidade, respeita as funções cadastradas e procura equilibrar as participações. A 2ª Leitura é aplicada às Missas dominicais e à Missa de sábado às 19h.</p>
           </div>
-          {selected.status==='published'&&<a className="adminPrimary" href="/pastorais/liturgia/escala" target="_blank">Ver escala pública</a>}
+          <div className="actions">
+            <a className="adminPrimary" href={`/admin/escala-liturgica/imprimir?ciclo=${selected.id}`} target="_blank">Imprimir / Gerar PDF</a>
+            {selected.status==='published'&&<a className="adminPrimary" href="/pastorais/liturgia/escala" target="_blank">Ver escala pública</a>}
+          </div>
         </div>
 
         {assignments.length===0
