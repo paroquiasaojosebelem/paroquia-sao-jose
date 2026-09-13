@@ -1,19 +1,23 @@
 import Link from 'next/link'
 import Header from '../components/Header'
 import Footer from '../components/Footer'
+import HomeHighlightsCarousel from '../components/HomeHighlightsCarousel'
 import { createClient } from '../lib/supabase/server'
 const dias=['Domingo','Segunda-feira','Terça-feira','Quarta-feira','Quinta-feira','Sexta-feira','Sábado']
 const hh=t=>t?.slice(0,5) || ''
 export default async function Home(){
  const s=await createClient();
- const [{data:masses=[]},{data:live=[]},{data:news=[]}]=await Promise.all([
+ const today=new Date().toISOString().slice(0,10);
+ const [{data:masses=[]},{data:live=[]},{data:news=[]},{data:highlights=[]}]=await Promise.all([
   s.from('mass_schedule').select('weekday,mass_time,title,notes').eq('active',true).order('weekday').order('mass_time'),
   s.from('live_streams').select('*').eq('active',true).order('starts_at',{ascending:false}).limit(1),
-  s.from('news').select('id,title,summary,published_at,active').eq('active',true).order('published_at',{ascending:false}).limit(3)
+  s.from('news').select('id,title,summary,published_at,active').eq('active',true).order('published_at',{ascending:false}).limit(3),
+  s.from('highlights').select('id,title,category,summary,image_url,mobile_image_url,image_alt,button_label,button_url,display_type,sort_order,starts_on,ends_on,active').eq('active',true).or(`starts_on.is.null,starts_on.lte.${today}`).or(`ends_on.is.null,ends_on.gte.${today}`).order('sort_order').order('created_at',{ascending:false})
  ]);
  const grouped=masses.reduce((a,m)=>{(a[m.weekday]??=[]).push(m);return a},{}); const currentLive=live?.[0];
  return <><Header/>
   <section className="hero"><div className="wrap heroGrid"><div className="heroText"><span className="eyebrow">PARÓQUIA SÃO JOSÉ · UMARIZAL</span><h2>A exemplo de São José,<br/>caminhemos na fé, no serviço<br/>e na esperança.</h2><p>“Ele fez como o Anjo do Senhor lhe havia mandado.” <em>(Mt 1,24)</em></p><Link className="goldBtn" href="/pastorais">CONHEÇA NOSSA PARÓQUIA →</Link></div></div></section>
+  <HomeHighlightsCarousel items={highlights||[]}/>
   <section className="shortcutBand"><div className="wrap shortcuts">
    <Link href="/pastorais"><span>♟</span><b>PASTORAIS</b><small>Servir é evangelizar</small></Link>
    <Link href="/horarios"><span>◷</span><b>HORÁRIOS</b><small>Missas e Confissões</small></Link>
