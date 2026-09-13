@@ -78,19 +78,14 @@ export default async function PrintLiturgySchedule({searchParams}){
     </div>
 
     <header className="printHeader">
-      <div className="cross">✝</div>
-      <div>
+      <div className="crestBox"><img src="/brasao-arquidiocese-belem.png" alt="Brasão da Arquidiocese de Belém"/></div>
+      <div className="headerText">
         <div className="archdiocese">ARQUIDIOCESE DE BELÉM</div>
-        <h1>PARÓQUIA SÃO JOSÉ – UMARIZAL</h1>
-        <p>Pastoral da Liturgia</p>
+        <h1>PARÓQUIA SÃO JOSÉ</h1>
+        <p>ESCALA DA PASTORAL DA LITURGIA - {monthTitle(cycle.month)}</p>
       </div>
-      <div className="cross">✝</div>
+      <div className="crestBox"><img src="/brasao-paroquia-sao-jose.jpg" alt="Brasão da Paróquia São José"/></div>
     </header>
-
-    <section className="titleBox">
-      <h2>ESCALA DA PASTORAL DA LITURGIA</h2>
-      <strong>{monthTitle(cycle.month)}</strong>
-    </section>
 
     {rows.length===0
       ? <p className="empty">A escala deste mês ainda não foi gerada.</p>

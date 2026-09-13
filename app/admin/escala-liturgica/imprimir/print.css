@@ -4,11 +4,11 @@ body{margin:0;background:#f3efe7;color:#1f1a16;font-family:Arial,Helvetica,sans-
 .screenActions{display:flex;justify-content:space-between;align-items:center;margin-bottom:22px}
 .screenActions a{color:#083b5c;text-decoration:none;font-weight:700}
 .printButton{border:0;border-radius:8px;padding:11px 18px;background:#b57825;color:#fff;font-weight:700;cursor:pointer}
-.printHeader{display:grid;grid-template-columns:80px 1fr 80px;align-items:center;text-align:center;border-bottom:2px solid #6d3a16;padding-bottom:14px}
-.cross{font-size:38px;color:#8a541d}
-.archdiocese{font-size:12px;letter-spacing:2px;font-weight:700}
-.printHeader h1{font-family:Georgia,'Times New Roman',serif;color:#5c2c0e;font-size:24px;margin:5px 0}
-.printHeader p{margin:0;font-weight:700}
+.printHeader{display:grid;grid-template-columns:150px 1fr 150px;align-items:center;text-align:center;border-bottom:1px solid #222;padding:4px 0 14px;min-height:150px}
+.crestBox{display:flex;align-items:center;justify-content:center;height:135px}.crestBox img{display:block;max-width:120px;max-height:125px;width:auto;height:auto;object-fit:contain}
+.archdiocese{font-size:17px;font-weight:800}
+.printHeader h1{font-family:Arial,Helvetica,sans-serif;color:#111;font-size:19px;margin:14px 0;font-weight:800}
+.printHeader p{margin:0;font-weight:800;font-size:17px}
 .titleBox{text-align:center;padding:15px 0}
 .titleBox h2{font-family:Georgia,'Times New Roman',serif;font-size:21px;margin:0 0 4px;color:#5c2c0e}
 .titleBox strong{font-size:16px}
@@ -30,11 +30,11 @@ footer p{margin:2px}
   body{background:#fff}
   .printPage{max-width:none;margin:0;padding:0;box-shadow:none}
   .screenActions{display:none!important}
-  .printHeader{grid-template-columns:55px 1fr 55px;padding-bottom:7px}
-  .cross{font-size:25px}
-  .printHeader h1{font-size:17px;margin:2px 0}
-  .archdiocese{font-size:8px}
-  .printHeader p{font-size:9px}
+  .printHeader{grid-template-columns:95px 1fr 95px;min-height:85px;padding:0 0 6px}
+  .crestBox{height:78px}.crestBox img{max-width:72px;max-height:74px}
+  .printHeader h1{font-size:11px;margin:5px 0}
+  .archdiocese{font-size:10px}
+  .printHeader p{font-size:10px}
   .titleBox{padding:6px 0}
   .titleBox h2{font-size:14px;margin-bottom:2px}
   .titleBox strong{font-size:10px}
