@@ -11,7 +11,6 @@ export default function AvailabilityLinkField({ value }) {
       setCopied(true)
       setTimeout(() => setCopied(false), 1800)
     } catch {
-      // Fallback: select the field so the user can copy manually.
       const input = document.getElementById(`availability-${encodeURIComponent(value)}`)
       input?.select()
     }
