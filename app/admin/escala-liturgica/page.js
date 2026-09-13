@@ -70,6 +70,29 @@ function roleApplies(role,ms){
   return role!=='second_reading' || isSecondReadingApplicable(ms)
 }
 
+function firstWeekdayOfMonth(date, weekday){
+  const y=date.getFullYear(), m=date.getMonth()
+  for(let d=1;d<=7;d++){
+    const x=new Date(y,m,d,12)
+    if(x.getDay()===weekday)return d
+  }
+  return null
+}
+function specialGroup(massDate, ms){
+  const value=String(massDate||'').slice(0,10)
+  if(!value||!ms)return null
+  const [y,m,d]=value.split('-').map(Number)
+  const dt=new Date(y,m-1,d,12)
+  const w=dt.getDay()
+  const time=String(ms.mass_time||'').slice(0,5)
+
+  if(w===3 && time==='19:00') return 'ECC'
+  if(w===5 && d===firstWeekdayOfMonth(dt,5) && time==='18:30') return 'APOSTOLADO DA ORAÇÃO'
+  if(w===6 && d===firstWeekdayOfMonth(dt,6) && time==='12:00') return 'LEGIÃO DE MARIA'
+  if(w===6 && d===firstWeekdayOfMonth(dt,6) && time==='19:00') return 'MÃES QUE ORAM PELOS FILHOS'
+  return null
+}
+
 async function addMember(fd){
   'use server'
   const {supabase}=await requireAdmin()
@@ -257,11 +280,12 @@ async function generateSchedule(fd){
   for(const ms of schedules){
     for(const date of datesFor(month,Number(ms.weekday))){
       const used=new Set()
+      const reservedGroup=specialGroup(date,ms)
 
       for(const role of Object.keys(roleLabels)){
         let pick=null
 
-        if(roleApplies(role,ms)){
+        if(!reservedGroup && roleApplies(role,ms)){
           const cap=roleCaps[role]
           const scheduleId=normalizeId(ms.id)
 
@@ -301,7 +325,7 @@ async function generateSchedule(fd){
           mass_date:date,
           role,
           member_id:pick?.id||null,
-          notes:roleApplies(role,ms)?null:'not_applicable'
+          notes:reservedGroup?`group:${reservedGroup}`:(roleApplies(role,ms)?null:'not_applicable')
         })
       }
     }
@@ -492,7 +516,7 @@ export default async function Page({searchParams}){
         <div className="rowBetween">
           <div>
             <h3>Escala sugerida</h3>
-            <p className="adminHint">A geração considera apenas quem informou disponibilidade, respeita as funções cadastradas e procura equilibrar as participações. A 2ª Leitura é aplicada às Missas dominicais e à Missa de sábado às 19h.</p>
+            <p className="adminHint">A geração considera apenas quem informou disponibilidade, respeita as funções cadastradas e procura equilibrar as participações. Horários fixos de grupos pastorais são reservados automaticamente. A 2ª Leitura é aplicada às Missas dominicais e à Missa de sábado às 19h.</p>
           </div>
           <div className="actions">
             <a className="adminPrimary" href={`/admin/escala-liturgica/imprimir?ciclo=${selected.id}`} target="_blank">Imprimir / Gerar PDF</a>
@@ -506,25 +530,28 @@ export default async function Page({searchParams}){
             {Object.entries(grouped).map(([key,rows])=>{
               const first=firstOf(rows)
               const ms=relationOne(first?.mass_schedule)
+              const group=specialGroup(first?.mass_date,ms)
               return <article className="scheduleAdminCard" key={key}>
                 <h4>{first?fmtDate(first.mass_date):''} · {ms?.mass_time?.slice(0,5)||'--:--'} — {ms?.title||'Celebração'}</h4>
-                {rows.map(a=>{
-                  const assignmentMs=relationOne(a.mass_schedule)
-                  const applicable=roleApplies(a.role,assignmentMs)
-                  return <div className="assignmentRow" key={a.id}>
-                    <b>{roleLabels[a.role]}</b>
-                    {!applicable
-                      ?<span style={{opacity:.65,fontStyle:'italic'}}>Não se aplica</span>
-                      :<form action={assign}>
-                        <input type="hidden" name="id" value={a.id}/>
-                        <select name="member_id" defaultValue={a.member_id||''}>
-                          <option value="">Vaga em aberto</option>
-                          {members.filter(m=>m.active&&m[roleCaps[a.role]]).map(m=><option key={m.id} value={m.id}>{m.name}</option>)}
-                        </select>
-                        <button>Salvar</button>
-                      </form>}
-                  </div>
-                })}
+                {group
+                  ?<div style={{padding:'18px',textAlign:'center',fontWeight:800,color:'#8b1e16',fontSize:'1.05rem'}}>{group}</div>
+                  :rows.map(a=>{
+                    const assignmentMs=relationOne(a.mass_schedule)
+                    const applicable=roleApplies(a.role,assignmentMs)
+                    return <div className="assignmentRow" key={a.id}>
+                      <b>{roleLabels[a.role]}</b>
+                      {!applicable
+                        ?<span style={{opacity:.65,fontStyle:'italic'}}>Não se aplica</span>
+                        :<form action={assign}>
+                          <input type="hidden" name="id" value={a.id}/>
+                          <select name="member_id" defaultValue={a.member_id||''}>
+                            <option value="">Vaga em aberto</option>
+                            {members.filter(m=>m.active&&m[roleCaps[a.role]]).map(m=><option key={m.id} value={m.id}>{m.name}</option>)}
+                          </select>
+                          <button>Salvar</button>
+                        </form>}
+                    </div>
+                  })}
               </article>
             })}
           </div>}

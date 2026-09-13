@@ -31,6 +31,29 @@ function appliesSecond(ms){
   const w=Number(ms?.weekday)
   return w===0 || (w===6 && timeOf(ms)==='19:00')
 }
+
+function firstWeekdayOfMonth(date, weekday){
+  const y=date.getFullYear(), m=date.getMonth()
+  for(let d=1;d<=7;d++){
+    const x=new Date(y,m,d,12)
+    if(x.getDay()===weekday)return d
+  }
+  return null
+}
+function specialGroup(massDate, ms){
+  const value=String(massDate||'').slice(0,10)
+  if(!value||!ms)return null
+  const [y,m,d]=value.split('-').map(Number)
+  const dt=new Date(y,m-1,d,12)
+  const w=dt.getDay()
+  const time=String(ms.mass_time||'').slice(0,5)
+
+  if(w===3 && time==='19:00') return 'ECC'
+  if(w===5 && d===firstWeekdayOfMonth(dt,5) && time==='18:30') return 'APOSTOLADO DA ORAÇÃO'
+  if(w===6 && d===firstWeekdayOfMonth(dt,6) && time==='12:00') return 'LEGIÃO DE MARIA'
+  if(w===6 && d===firstWeekdayOfMonth(dt,6) && time==='19:00') return 'MÃES QUE ORAM PELOS FILHOS'
+  return null
+}
 function nameOf(a){
   if(!a?.member_id)return ''
   return one(a.liturgy_members)?.name||''
@@ -105,6 +128,7 @@ export default async function PrintLiturgySchedule({searchParams}){
             {rows.map((r,i)=>{
               const second=appliesSecond(r.ms)
               const weekend=[0,6].includes(Number(r.ms?.weekday))
+              const group=specialGroup(r.date,r.ms)
               return <tr key={`${r.date}-${timeOf(r.ms)}-${i}`} className={weekend?'weekend':'weekday'}>
                 <td>{brDate(r.date)}</td>
                 <td>{weekday(r.date)}</td>
@@ -112,10 +136,17 @@ export default async function PrintLiturgySchedule({searchParams}){
                   <b>{timeOf(r.ms)}</b>
                   {r.ms?.location&&<small>{r.ms.location}</small>}
                 </td>
-                <td>{nameOf(r.roles.commentator)||'—'}</td>
-                <td>{nameOf(r.roles.first_reading)||'—'}</td>
-                <td>{nameOf(r.roles.psalmist)||'—'}</td>
-                <td>{second?(nameOf(r.roles.second_reading)||'—'):''}</td>
+                {group
+                  ?<>
+                    <td colSpan={3} className="groupAssignment">{group}</td>
+                    <td>{second?'—':''}</td>
+                  </>
+                  :<>
+                    <td>{nameOf(r.roles.commentator)||'—'}</td>
+                    <td>{nameOf(r.roles.first_reading)||'—'}</td>
+                    <td>{nameOf(r.roles.psalmist)||'—'}</td>
+                    <td>{second?(nameOf(r.roles.second_reading)||'—'):''}</td>
+                  </>}
               </tr>
             })}
           </tbody>
