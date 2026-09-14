@@ -1,0 +1,6 @@
+import Link from 'next/link'
+import {notFound} from 'next/navigation'
+import Header from '../../../components/Header'
+import Footer from '../../../components/Footer'
+import {createClient} from '../../../lib/supabase/server'
+export default async function Conteudo({params}){const {id}=await params;const s=await createClient();const {data:x}=await s.from('spiritual_content').select('*').eq('id',id).eq('active',true).single();if(!x)notFound();return <><Header/><main className="wrap page spiritualArticle"><Link className="spiritualBack" href="/formacao">← Formação e Espiritualidade</Link>{x.image_url&&<img className="spiritualCover" src={x.image_url} alt=""/>}<span className="eyebrow dark">{x.category}</span><h1>{x.title}</h1><p className="spiritualByline">{x.author||'Paróquia São José'} · {new Date(x.published_at).toLocaleDateString('pt-BR')}</p>{x.summary&&<p className="spiritualLead">{x.summary}</p>}<div className="spiritualText">{x.content}</div>{x.audio_url&&<div className="spiritualMedia"><h3>Ouça este conteúdo</h3><audio controls src={x.audio_url}/></div>}{x.video_url&&<div className="spiritualMedia"><h3>Vídeo</h3><a className="goldBtn" href={x.video_url} target="_blank" rel="noreferrer">ASSISTIR AO VÍDEO →</a></div>}</main><Footer/></>}
