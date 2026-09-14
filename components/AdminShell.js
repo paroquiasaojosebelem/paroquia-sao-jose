@@ -3,7 +3,7 @@ import { logout } from '../app/admin/actions'
 
 const items = [
   ['▦','Dashboard','/admin'],['◷','Horários','/admin/horarios'],['♟','Pastorais','/admin/pastorais'],
-  ['▤','Notícias','/admin/noticias'],['✝','Formação e Espiritualidade','/admin/formacao'],['🗓','Agenda','/admin/agenda'],['✦','Destaques','/admin/destaques'],['🙏','Intenções','/admin/intencoes'],['📖','Liturgia','/admin/liturgia'],['🗓','Escala Litúrgica','/admin/escala-liturgica'],
+  ['▤','Notícias','/admin/noticias'],['✝','Formação e Espiritualidade','/admin/formacao'],['🕯️','Vela Virtual','/admin/vela-virtual'],['🗓','Agenda','/admin/agenda'],['✦','Destaques','/admin/destaques'],['🙏','Intenções','/admin/intencoes'],['📖','Liturgia','/admin/liturgia'],['🗓','Escala Litúrgica','/admin/escala-liturgica'],
   ['🔴','Transmissões','/admin/transmissoes'],['⚙','Configurações','/admin/configuracoes']
 ]
 export default function AdminShell({profile, children}){

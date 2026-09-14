@@ -25,6 +25,7 @@ export default async function Home(){
    <Link href="/horarios"><span>◷</span><b>HORÁRIOS</b><small>Missas e Confissões</small></Link>
    <Link href="/liturgia"><span>†</span><b>LITURGIA DIÁRIA</b><small>A Palavra de hoje</small></Link>
    <Link href="/terco-virtual"><span>◉</span><b>TERÇO VIRTUAL</b><small>Reze conosco</small></Link>
+   <Link href="/vela-virtual"><span>🕯️</span><b>VELA VIRTUAL</b><small>Acenda sua vela</small></Link>
    <Link href="/dizimo"><span>♥</span><b>DÍZIMO</b><small>Partilhe esta obra</small></Link>
    <Link href="/intencoes"><span>◇</span><b>INTENÇÕES</b><small>Apresente sua intenção</small></Link>
    <Link href="/noticias"><span>▤</span><b>NOTÍCIAS</b><small>Fique por dentro</small></Link>
