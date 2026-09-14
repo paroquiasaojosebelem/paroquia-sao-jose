@@ -3,6 +3,7 @@ import Header from '../../../components/Header'
 import Footer from '../../../components/Footer'
 import CopyPixButton from '../../../components/CopyPixButton'
 import {createClient} from '../../../lib/supabase/server'
+import PaymentConfirmationForm from './PaymentConfirmationForm'
 
 const labels={pix:'PIX',credit:'Cartão de crédito',debit:'Cartão de débito'}
 export default async function Pagamento({searchParams}){
@@ -24,7 +25,7 @@ export default async function Pagamento({searchParams}){
       {method==='pix'&&<div className="paymentMethodBox"><h2>Pagamento por PIX</h2>{pix?<><p>Use a chave abaixo no aplicativo do seu banco:</p><div className="pixKey"><b>{pix}</b></div><CopyPixButton value={pix}/>{qr&&<img className="qr" src={qr} alt="QR Code PIX da Paróquia"/>}</>:<div className="errorBox">A chave PIX das intenções ainda precisa ser cadastrada pela Secretaria.</div>}</div>}
       {isCard&&<div className="paymentMethodBox"><h2>{labels[method]}</h2>{cardUrl?<><p>O pagamento será concluído no ambiente seguro do provedor da Paróquia. Nenhum número de cartão é armazenado neste site.</p><a className="goldBtn" href={cardUrl} target="_blank" rel="noreferrer">ABRIR PAGAMENTO SEGURO</a></>:<div className="errorBox">O link para pagamento com cartão ainda precisa ser configurado pela Secretaria.</div>}</div>}
       <div className="paymentProtocol"><small>Protocolo da intenção</small><code>{protocolo}</code><p>Guarde este protocolo até a confirmação da Secretaria.</p></div>
-      <div className="paymentNotice">Após o pagamento, a Secretaria confere a identificação e marca a intenção como <b>paga</b> no painel administrativo.</div>
+      <PaymentConfirmationForm protocol={protocolo}/><div className="paymentNotice">A informação de pagamento não confirma automaticamente a transação. A Secretaria confere a identificação e somente então marca a intenção como <b>paga/confirmada</b>.</div>
       <Link className="forgotLink" href="/">Voltar ao site da Paróquia</Link>
     </section>
   </main><Footer/></>
