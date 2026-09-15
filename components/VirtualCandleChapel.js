@@ -12,7 +12,20 @@ function softBell(){
 }
 export default function VirtualCandleChapel({initialCandles=[],initialStats={}}){
  const [candles,setCandles]=useState(initialCandles),[stats,setStats]=useState(initialStats),[open,setOpen]=useState(false),[selected,setSelected]=useState(null),[saving,setSaving]=useState(false),[done,setDone]=useState(false),[error,setError]=useState('')
- const positions=useMemo(()=>candles.map((c,i)=>({left:6+((i*23)%88),bottom:5+((i*17)%29),scale:.72+((i*7)%25)/100,delay:-((i*13)%37)/10})),[candles])
+ const positions=useMemo(()=>{
+  const n=Math.min(candles.length,36)
+  if(!n)return []
+  // As primeiras velas nascem no centro do altar; novas velas expandem-se simetricamente.
+  const rows=n<=5?[n]:n<=14?[Math.min(7,n),n-Math.min(7,n)]:[Math.min(12,n),Math.min(12,Math.max(0,n-12)),Math.max(0,n-24)].filter(Boolean)
+  const out=[]
+  let index=0
+  rows.forEach((count,row)=>{
+    const spacing=count===1?0:Math.min(8.2,70/(count-1))
+    const start=50-(spacing*(count-1))/2
+    for(let j=0;j<count;j++,index++) out.push({left:start+j*spacing,bottom:5+row*31,scale:row===0?1:0.88-row*.04,delay:-((index*13)%37)/10})
+  })
+  return out
+},[candles])
  async function refresh(){const s=createClient();const [{data:c},{data:st}]=await Promise.all([s.rpc('get_public_virtual_candles',{p_limit:36}),s.rpc('get_virtual_candle_stats')]);if(c)setCandles(c);if(st?.[0])setStats(st[0])}
  async function submit(e){e.preventDefault();setSaving(true);setError('');const fd=new FormData(e.currentTarget);const s=createClient();const {error:er}=await s.rpc('light_virtual_candle',{p_name:String(fd.get('name')||'').trim()||null,p_intention_type:fd.get('type'),p_message:String(fd.get('message')||'').trim()||null,p_is_public:fd.get('public')==='on'});setSaving(false);if(er){setError('Não foi possível acender a vela. Tente novamente.');return}softBell();setDone(true);await refresh()}
  function close(){setOpen(false);setDone(false);setError('')}
@@ -20,7 +33,7 @@ export default function VirtualCandleChapel({initialCandles=[],initialStats={}})
   <section className="candleStats"><div><strong>{stats.total||0}</strong><span>velas acesas neste momento</span></div><div><b>{stats.familia||0}</b><span>Família</span></div><div><b>{stats.saude||0}</b><span>Saúde</span></div><div><b>{stats.acao_gracas||0}</b><span>Ação de graças</span></div></section>
   <section className="chapelScene" aria-label="Capela Virtual de São José">
     <div className="chapelBackdrop"/><div className="chapelGlow"/>
-    <div className="chapelArch"><div className="chapelCross">✝</div><div className="saintFigure" aria-label="São José"><div className="saintHalo"/><div className="saintHead"/><div className="saintBody"/><div className="saintChild"/><div className="saintLily">⚜</div><strong>SÃO JOSÉ</strong><small>rogai por nós</small></div></div>
+    <div className="saintDevotional" aria-label="São José com o Menino Jesus"><strong>SÃO JOSÉ</strong><small>rogai por nós</small></div>
     <div className="altarTop"><span>Paróquia São José · Umarizal</span></div>
     <div className="candleShelf">
       {candles.map((c,i)=><button type="button" className="virtualCandle" key={c.id} style={{left:`${positions[i].left}%`,bottom:`${positions[i].bottom}%`,transform:`scale(${positions[i].scale})`}} onClick={()=>setSelected(c)} aria-label={`Abrir ${c.display_name}`}><i className="flame" style={{animationDelay:`${positions[i].delay}s`}}/><i className="wick"/><i className="wax"/></button>)}
