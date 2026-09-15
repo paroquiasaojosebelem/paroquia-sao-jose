@@ -13,16 +13,17 @@ async function saveDonation(fd){
     intention_pix_key:fd.get('intention_pix_key')?.trim()||null,
     intention_pix_qr_url:fd.get('intention_pix_qr_url')?.trim()||null,
     intention_card_payment_url:fd.get('intention_card_payment_url')?.trim()||null,
-    active:true
+    active:true,
+    updated_at:new Date().toISOString()
   }
-  const {data}=await supabase.from('donation_settings').select('id').limit(1).maybeSingle()
+  const {data}=await supabase.from('donation_settings').select('id').order('updated_at',{ascending:false}).limit(1).maybeSingle()
   if(data?.id)await supabase.from('donation_settings').update(payload).eq('id',data.id);else await supabase.from('donation_settings').insert(payload)
   revalidatePath('/dizimo');revalidatePath('/intencoes');revalidatePath('/intencoes/pagamento');revalidatePath('/admin/configuracoes')
 }
 
 export default async function Page(){
   const {supabase}=await requireAdmin()
-  const {data:cfg}=await supabase.from('donation_settings').select('*').limit(1).maybeSingle()
+  const {data:cfg}=await supabase.from('donation_settings').select('*').order('updated_at',{ascending:false}).limit(1).maybeSingle()
   return <><div className="adminTitle"><h1>Configurações</h1><p>Dados institucionais e meios de contribuição.</p></div>
     <section className="panel adminPanel"><h2>Dízimo e contribuições</h2><form action={saveDonation} className="adminForm">
       <h3>Dízimo</h3>

@@ -11,7 +11,7 @@ export default async function Pagamento({searchParams}){
   const method=sp?.metodo || 'pix'
   const protocolo=sp?.protocolo || ''
   const s=await createClient()
-  const {data:cfg}=await s.from('donation_settings').select('*').eq('active',true).limit(1).maybeSingle()
+  const {data:cfg}=await s.from('donation_settings').select('*').eq('active',true).order('updated_at',{ascending:false}).limit(1).maybeSingle()
   const amount=cfg?.intention_amount ? Number(cfg.intention_amount).toLocaleString('pt-BR',{style:'currency',currency:'BRL'}) : null
   const pix=cfg?.intention_pix_key || cfg?.pix_key || ''
   const qr=cfg?.intention_pix_qr_url || cfg?.pix_qr_url || ''
