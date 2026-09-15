@@ -19,8 +19,9 @@ export default function VirtualCandleChapel({initialCandles=[],initialStats={}})
  return <>
   <section className="candleStats"><div><strong>{stats.total||0}</strong><span>velas acesas neste momento</span></div><div><b>{stats.familia||0}</b><span>Família</span></div><div><b>{stats.saude||0}</b><span>Saúde</span></div><div><b>{stats.acao_gracas||0}</b><span>Ação de graças</span></div></section>
   <section className="chapelScene" aria-label="Capela Virtual de São José">
-    <div className="chapelGlow"/><div className="chapelArch"><div className="chapelCross">✝</div><div className="saintMedallion"><span>JHS</span><strong>SÃO JOSÉ</strong><small>rogai por nós</small></div></div>
-    <div className="altarCloth"><span>Paróquia São José · Umarizal</span></div>
+    <div className="chapelBackdrop"/><div className="chapelGlow"/>
+    <div className="chapelArch"><div className="chapelCross">✝</div><div className="saintFigure" aria-label="São José"><div className="saintHalo"/><div className="saintHead"/><div className="saintBody"/><div className="saintChild"/><div className="saintLily">⚜</div><strong>SÃO JOSÉ</strong><small>rogai por nós</small></div></div>
+    <div className="altarTop"><span>Paróquia São José · Umarizal</span></div>
     <div className="candleShelf">
       {candles.map((c,i)=><button type="button" className="virtualCandle" key={c.id} style={{left:`${positions[i].left}%`,bottom:`${positions[i].bottom}%`,transform:`scale(${positions[i].scale})`}} onClick={()=>setSelected(c)} aria-label={`Abrir ${c.display_name}`}><i className="flame" style={{animationDelay:`${positions[i].delay}s`}}/><i className="wick"/><i className="wax"/></button>)}
       {!candles.length&&<div className="emptyChapel"><span>🕯️</span><b>A primeira vela pode ser a sua.</b><small>Una sua oração à nossa comunidade.</small></div>}
